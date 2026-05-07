@@ -1,0 +1,126 @@
+---
+title: "7-4장. Boot from Volume 시나리오"
+---
+
+# Boot from Volume 시나리오
+
+## 학습 목표
+- 부팅용 볼륨을 만들고 인스턴스를 Boot from Volume으로 생성합니다.
+- 인스턴스와 볼륨의 연결 상태를 확인합니다.
+- 인스턴스 삭제 후 볼륨이 어떻게 남는지 확인합니다.
+
+## 선행 지식/준비사항
+- [7-1장](ch7_1_lec.qmd), [7-2장](ch7_2_lec.qmd) 완료
+- 사용 가능한 네트워크, 플레이버, 키페어
+- `active` 상태 이미지 1개 이상
+- 인스턴스 생성 quota와 volume quota 여유
+
+## 실습 단계
+
+### 1) 리소스 확인
+
+```bash
+source /실제/경로/admin-openrc
+
+openstack network list
+openstack flavor list
+openstack keypair list
+openstack image list --status active
+```
+
+실습 변수:
+
+```bash
+NET_NAME=<NETWORK_NAME>
+FLAVOR_NAME=<FLAVOR_NAME>
+KEY_NAME=<KEYPAIR_NAME>
+IMG_NAME=cirros-0.6.3-x86_64
+```
+
+예시:
+
+```bash
+NET_NAME=provider-net
+FLAVOR_NAME=m1.small
+KEY_NAME=demo-key
+```
+
+### 2) 부팅용 볼륨 생성
+
+```bash
+openstack volume create ch7-boot-vol-01 \
+  --size 2 \
+  --image $IMG_NAME
+
+openstack volume show ch7-boot-vol-01 \
+  -c status -c bootable -f yaml
+```
+
+예상 상태:
+- `status: available`
+- `bootable: true`
+
+### 3) Boot from Volume으로 서버 생성
+
+```bash
+openstack server create ch7-bfv-vm-01 \
+  --flavor $FLAVOR_NAME \
+  --network $NET_NAME \
+  --key-name $KEY_NAME \
+  --volume ch7-boot-vol-01
+```
+
+```bash
+openstack server show ch7-bfv-vm-01 \
+  -c status -c addresses -c volumes_attached -f yaml
+```
+
+예상 상태:
+- 서버가 `ACTIVE`입니다.
+- `volumes_attached`에 `ch7-boot-vol-01`에 해당하는 볼륨 ID가 보입니다.
+
+### 4) 볼륨 attach 상태 확인
+
+```bash
+openstack volume show ch7-boot-vol-01 \
+  -c status -c attachments -f yaml
+```
+
+정상 흐름이면 서버는 `ACTIVE`, 볼륨은 `in-use`입니다.
+
+### 5) 서버 삭제 후 볼륨 상태 확인
+
+```bash
+openstack server delete ch7-bfv-vm-01
+openstack volume show ch7-boot-vol-01 -c status -f yaml
+```
+
+볼륨 보존 정책이면 서버 삭제 후에도 볼륨은 남고 `available`로 돌아옵니다.
+
+## 검증
+- 서버: `status: ACTIVE`
+- 볼륨 실행 중: `status: in-use`
+- 서버 삭제 후 볼륨: `status: available`
+- `volumes_attached`와 `attachments` 값이 서로 일치
+
+## 트러블슈팅
+1. 서버가 `ERROR`
+- 이미지/볼륨 상태, 네트워크, 보안그룹, 플레이버 리소스를 순서대로 확인합니다.
+
+2. 볼륨이 `in-use`로 바뀌지 않음
+- Nova-Cinder attach 단계 실패 가능성이 큽니다.
+- `server show`, `volume show`, Nova compute 로그, Cinder volume 로그를 같이 봅니다.
+
+3. 서버 삭제 시 볼륨도 같이 삭제됨
+- 블록 디바이스 매핑과 delete-on-termination 정책 영향을 확인합니다.
+- 생성 옵션과 Horizon 선택값을 다시 확인합니다.
+
+4. 같은 테스트를 반복할 때 이름 충돌 발생
+- 이전 서버/볼륨 삭제가 끝났는지 확인합니다.
+- `openstack server list --all-projects`와 `openstack volume list --all-projects`가 필요한 경우도 있습니다.
+
+## 참고 공식 문서
+- Nova User Documentation: https://docs.openstack.org/nova/latest/user/
+- OpenStackClient server commands: https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/server.html
+- OpenStackClient volume commands: https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/volume.html
+- OpenStack Cinder User Guide: https://docs.openstack.org/cinder/latest/user/

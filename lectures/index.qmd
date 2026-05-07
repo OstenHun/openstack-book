@@ -19,3 +19,8 @@ title: "오픈스택 강의 자료"
   - [SNAT/DNAT 개념](ch6/snat_dnat.qmd)
   - [Neutron Agent 종류 정리](ch6/neutron_agents.qmd)
   - [OVS/VXLAN 가상 네트워크 만들기](ch6/ovs_vxlan_vpn.qmd)
+- [7장. Cinder](ch7_lec.qmd)
+  - [7-1장. Cinder 개요와 Volume 기본 사용](ch7/ch7_1_lec.qmd)
+  - [7-2장. 이미지 기반 Volume과 Snapshot 흐름](ch7/ch7_2_lec.qmd)
+  - [7-3장. Backend Driver 구조와 LVM 확인](ch7/ch7_3_lec.qmd)
+  - [7-4장. Boot from Volume 시나리오](ch7/ch7_4_lec.qmd)

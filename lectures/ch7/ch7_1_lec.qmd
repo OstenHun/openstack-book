@@ -1,0 +1,91 @@
+---
+title: "7-1장. Cinder 개요와 Volume 기본 사용"
+---
+
+# Cinder 개요와 Volume 기본 사용
+
+## 학습 목표
+- Cinder가 OpenStack에서 맡는 역할을 이해합니다.
+- volume service, volume type, volume 상태를 확인합니다.
+- 기본 볼륨을 생성하고 삭제하는 최소 흐름을 실습합니다.
+
+## 선행 지식/준비사항
+- `openstack` CLI 사용 가능
+- `admin-openrc` 또는 프로젝트 RC 파일 위치 확인
+- Cinder 서비스가 설치된 OpenStack 환경
+- 실습 프로젝트에 볼륨 생성 권한과 quota 여유 필요
+
+## 실습 단계
+
+### 1) 인증 정보와 Cinder 서비스 확인
+
+```bash
+sudo -i
+source /실제/경로/admin-openrc
+
+openstack volume service list
+openstack volume type list
+openstack volume list
+```
+
+예상 상태:
+- `openstack volume service list`가 에러 없이 끝납니다.
+- `cinder-scheduler`, `cinder-volume` 서비스가 `up` 상태입니다.
+- volume type이 없어도 기본 타입으로 실습을 시작할 수 있습니다.
+
+### 2) 기본 볼륨 생성
+
+```bash
+openstack volume create ch7-basic-vol-01 --size 1
+
+openstack volume show ch7-basic-vol-01 \
+  -c id -c name -c status -c size -c type -f yaml
+```
+
+예상 상태:
+- 생성 직후에는 `creating`으로 보일 수 있습니다.
+- 최종 상태는 `available`이어야 합니다.
+
+### 3) 볼륨 목록에서 확인
+
+```bash
+openstack volume list
+openstack volume show ch7-basic-vol-01 -f yaml
+```
+
+확인할 값:
+- `status: available`
+- `size: 1`
+- `attachments: []` 또는 비어 있는 attachments
+
+### 4) 볼륨 삭제
+
+```bash
+openstack volume delete ch7-basic-vol-01
+openstack volume list | grep ch7-basic-vol-01
+```
+
+정상 삭제 후에는 `grep` 결과가 없어야 합니다.
+
+## 검증
+- Cinder 서비스가 `up`입니다.
+- 볼륨 생성 후 `status: available`입니다.
+- 삭제 후 볼륨 목록에 `ch7-basic-vol-01`이 남지 않습니다.
+
+## 트러블슈팅
+1. `openstack volume service list`가 실패함
+- RC 파일을 잘못 source했거나 endpoint/catalog 문제가 있을 수 있습니다.
+- `openstack token issue`와 `openstack endpoint list --service volumev3`를 먼저 확인합니다.
+
+2. 볼륨이 `error`
+- quota 초과, 백엔드 용량 부족, volume type 매핑 오류가 흔합니다.
+- `openstack volume show <volume>`의 `status`와 Cinder 로그를 같이 봅니다.
+
+3. 볼륨 삭제가 오래 걸림
+- 백엔드 삭제 지연 또는 `deleting` 상태 잔류일 수 있습니다.
+- 같은 이름으로 다시 만들기 전에 상태가 실제로 사라졌는지 확인합니다.
+
+## 참고 공식 문서
+- OpenStack Cinder User Guide: https://docs.openstack.org/cinder/latest/user/
+- OpenStack Block Storage API: https://docs.openstack.org/api-ref/block-storage/
+- OpenStackClient volume commands: https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/volume.html

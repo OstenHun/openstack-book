@@ -37,6 +37,17 @@ website:
               file: lectures/ch6/snat_dnat.qmd
             - text: "6-15. OVS와 VXLAN를 이용해 가상 네트워크 만들기"
               file: lectures/ch6/ovs_vxlan_vpn.qmd
+        - section: "7장. Cinder"
+          file: lectures/ch7_lec.qmd
+          contents:
+            - text: "7-1. Cinder 개요와 Volume 기본 사용"
+              file: lectures/ch7/ch7_1_lec.qmd
+            - text: "7-2. 이미지 기반 Volume과 Snapshot 흐름"
+              file: lectures/ch7/ch7_2_lec.qmd
+            - text: "7-3. Backend Driver 구조와 LVM 확인"
+              file: lectures/ch7/ch7_3_lec.qmd
+            - text: "7-4. Boot from Volume 시나리오"
+              file: lectures/ch7/ch7_4_lec.qmd
 
 
 
