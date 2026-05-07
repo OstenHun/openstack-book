@@ -120,6 +120,19 @@ bootable: 'true'
 - `openstack image create --help`에서 `--volume` 옵션 지원 여부를 확인합니다.
 - 일부 환경에서는 Cinder의 upload-to-image 흐름을 사용합니다.
 
+## 이번 장에서 남기면 좋은 화면
+- `openstack image list --status active`
+- `openstack volume type list`
+- `openstack volume show`에서 `bootable: true`
+- `openstack volume snapshot show`에서 `status: available`
+- `openstack image show ch7-vol-derived-img`에서 `status: active`
+
+권장 파일명:
+- `7-2-1-1_image-volume-type-list.png`
+- `7-2-2-1_volume-bootable.png`
+- `7-2-3-1_snapshot-available.png`
+- `7-2-4-1_derived-image-active.png`
+
 ## 참고 공식 문서
 - OpenStack Cinder User Guide: https://docs.openstack.org/cinder/latest/user/
 - OpenStack Block Storage API: https://docs.openstack.org/api-ref/block-storage/

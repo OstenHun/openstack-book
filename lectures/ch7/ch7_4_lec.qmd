@@ -119,6 +119,20 @@ openstack volume show ch7-boot-vol-01 -c status -f yaml
 - 이전 서버/볼륨 삭제가 끝났는지 확인합니다.
 - `openstack server list --all-projects`와 `openstack volume list --all-projects`가 필요한 경우도 있습니다.
 
+## 이번 장에서 남기면 좋은 화면
+- 리소스 사전 확인(`network`, `flavor`, `keypair`, `image`)
+- 부팅 볼륨 `available + bootable: true`
+- 서버 `ACTIVE + volumes_attached`
+- 실행 중 볼륨 `in-use + attachments`
+- 서버 삭제 후 볼륨 `available`
+
+권장 파일명:
+- `7-4-1-1_resource-list.png`
+- `7-4-2-1_boot-volume-ready.png`
+- `7-4-3-1_server-active-attached.png`
+- `7-4-4-1_volume-inuse.png`
+- `7-4-5-1_volume-after-server-delete.png`
+
 ## 참고 공식 문서
 - Nova User Documentation: https://docs.openstack.org/nova/latest/user/
 - OpenStackClient server commands: https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/server.html

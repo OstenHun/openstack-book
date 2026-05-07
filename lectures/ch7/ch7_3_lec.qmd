@@ -95,6 +95,20 @@ sudo lvs
 - 백엔드 I/O 병목, lock contention, scheduler retry가 겹칠 수 있습니다.
 - 요청 수를 줄이고 Cinder volume worker와 스토리지 지표를 함께 봅니다.
 
+## 이번 장에서 남기면 좋은 화면
+- `openstack volume service list`
+- `sudo lvs` 기준선
+- 볼륨 생성 후 `openstack volume show`에서 `status: available`
+- 볼륨 생성 후 `sudo lvs`에서 신규 LV 확인
+- 볼륨 삭제 후 `sudo lvs`에서 LV 회수 확인
+
+권장 파일명:
+- `7-3-1-1_volume-service-list.png`
+- `7-3-1-2_lvs-before.png`
+- `7-3-2-1_volume-available.png`
+- `7-3-2-2_lvs-after-create.png`
+- `7-3-3-1_lvs-after-delete.png`
+
 ## 참고 공식 문서
 - Cinder LVM Backend: https://docs.openstack.org/cinder/latest/admin/blockstorage-lvm-backend.html
 - Cinder Configuration Reference: https://docs.openstack.org/cinder/latest/configuration/
